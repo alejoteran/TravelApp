@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Búsqueda de Vuelos</title>
+  </head>
+  <body>
+    <h1>Búsqueda de Vuelos</h1>
+    <form id="formBusqueda">
+      <label for="origen">País de origen:</label>
+      <input type="text" id="origen" name="origen" required />
+      <br /><br />
+
+      <label for="destino">Destino:</label>
+      <input type="text" id="destino" name="destino" required />
+      <br /><br />
+
+      <label for="fecha">Fecha de salida:</label>
+      <input type="date" id="fecha" name="fecha" required />
+      <br /><br />
+
+      <button type="button" onclick="buscarVuelos()">Buscar Vuelos</button>
+    </form>
+    <br />
+
+    <table id="tablaVuelos">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Aerolínea</th>
+          <th>Precio</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Los resultados de la búsqueda se llenarán aquí -->
+      </tbody>
+    </table>
+
+    <script>
+      function buscarVuelos() {
+        const origen = document.getElementById("origen").value;
+        const destino = document.getElementById("destino").value;
+        const fecha = document.getElementById("fecha").value;
+
+        fetch(
+          `/buscarVuelos?origen=${origen}&destino=${destino}&fecha=${fecha}`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            const tbody = document
+              .getElementById("tablaVuelos")
+              .getElementsByTagName("tbody")[0];
+            tbody.innerHTML = ""; // Limpiar resultados anteriores
+
+            data.data.forEach((vuelo) => {
+              let fila = tbody.insertRow();
+              let celdaId = fila.insertCell(0);
+              let celdaAerolinea = fila.insertCell(1);
+              let celdaPrecio = fila.insertCell(2);
+
+              celdaId.textContent = vuelo.id;
+              celdaAerolinea.textContent =
+                vuelo.validatingAirlineCodes.join(", ");
+              celdaPrecio.textContent = vuelo.price.total;
+            });
+          })
+          .catch((error) => console.error("Error al buscar vuelos:", error));
+      }
+    </script>
+  </body>
+</html>
